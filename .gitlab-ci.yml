@@ -9,6 +9,9 @@ variables:
   # Runner tag(s) for the build-chunk jobs in the child pipeline.
   # Comma-separate for multiple tags, e.g. "linux,heavy".
   BUILD_RUNNER_TAGS: "gitgud"
+  # Max concurrent build-chunk jobs. Leave empty (or unset) for unlimited;
+  # set to e.g. "5" to cap concurrency via resource_group slots.
+  BUILD_CONCURRENCY: "6"
   # Full history is needed for `git diff` against the previous commit.
   GIT_DEPTH: "0"
   GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
