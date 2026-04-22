@@ -193,8 +193,19 @@ def write_child_pipeline(chunks: list[list[str]], out_path: str = "build-pipelin
 
     lines += [
         "  variables:",
+        # Shallow clone — build jobs don't need history, and full-depth clones
+        # from every chunk simultaneously tend to overload GitLab's git server.
+        '    GIT_DEPTH: "1"',
         '    GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"',
         '    GRADLE_OPTS: "-Dorg.gradle.daemon=false"',
+        "  retry:",
+        "    max: 2",
+        "    when:",
+        "      - runner_system_failure",
+        "      - stuck_or_timeout_failure",
+        "      - scheduler_failure",
+        "      - api_failure",
+        "      - unknown_failure",
         "  cache:",
         "    key: gradle-$CI_COMMIT_REF_SLUG",
         "    paths:",
