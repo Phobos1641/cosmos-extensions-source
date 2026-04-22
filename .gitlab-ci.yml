@@ -6,6 +6,9 @@ stages:
 variables:
   CI_CHUNK_SIZE: "65"
   IS_PR_CHECK: "false"
+  # Runner tag(s) for the build-chunk jobs in the child pipeline.
+  # Comma-separate for multiple tags, e.g. "linux,heavy".
+  BUILD_RUNNER_TAGS: "gitgud"
   # Full history is needed for `git diff` against the previous commit.
   GIT_DEPTH: "0"
   GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
@@ -27,6 +30,8 @@ default:
 # ---------------------------------------------------------------------------
 prepare:
   stage: prepare
+  tags:
+    - gitgud
   image: python:3.12-slim
   timeout: 10 minutes
   before_script:
@@ -67,6 +72,8 @@ build:
 # ---------------------------------------------------------------------------
 publish:
   stage: publish
+  tags:
+    - gitgud
   image: eclipse-temurin:17-jdk
   timeout: 15 minutes
   needs:
