@@ -38,13 +38,18 @@ prepare:
     - apt-get update -qq && apt-get install -yqq --no-install-recommends git
   script:
     # GitLab doesn't track "last successful commit" the way nrwl/nx-set-shas
-    # does on GitHub, so we diff against the previous commit. On a brand-new
-    # branch or after a force-push CI_COMMIT_BEFORE_SHA is all zeros, in which
-    # case we fall back to the well-known empty-tree SHA and rebuild everything.
+    # does on GitHub, so we diff against the previous commit. Fall back to the
+    # empty-tree SHA (and rebuild everything) if CI_COMMIT_BEFORE_SHA is empty,
+    # all zeros (new branch / force-push), or points at a commit the local
+    # clone doesn't have (rebased / squashed / dropped ref).
     - |
       BASE_SHA="${CI_COMMIT_BEFORE_SHA}"
-      if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-        BASE_SHA="4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+      EMPTY_TREE="4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+      if [ -z "$BASE_SHA" ] \
+         || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ] \
+         || ! git cat-file -e "$BASE_SHA" 2>/dev/null; then
+        echo "Base SHA '$BASE_SHA' unusable; falling back to empty tree (full rebuild)."
+        BASE_SHA="$EMPTY_TREE"
       fi
       python ./.gitlab/scripts/generate-build-matrices.py "$BASE_SHA" Release
   artifacts:
