@@ -59,6 +59,9 @@ jobs:
       - name: Check disk space
         run: df -h
 
+      - name: Check memory limitations
+        run: free -m
+
       - name: Checkout default branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -75,6 +78,10 @@ jobs:
         with:
           cache-read-only: ${{ matrix.chunk.number > 1 }}
 
+      - name: Tune Gradle for CI
+        run: |
+          echo "org.gradle.jvmargs=-Xmx5120m -Dfile.encoding=UTF-8" >> gradle.properties
+
       - name: Prepare signing key
         run: |
           echo ${{ secrets.SIGNING_KEY }} | base64 -d > signingkey.jks
@@ -86,7 +93,7 @@ jobs:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          ./gradlew $MODULES
+          ./gradlew $MODULES -Dkotlin.compiler.execution.strategy=in-process --no-watch-fs
 
       - name: Upload APKs (${{ matrix.chunk.number }})
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
