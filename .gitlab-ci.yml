@@ -8,7 +8,7 @@ variables:
   IS_PR_CHECK: "false"
   # Runner tag(s) for the build-chunk jobs in the child pipeline.
   # Comma-separate for multiple tags, e.g. "linux,heavy".
-  BUILD_RUNNER_TAGS: "gitgud"
+  BUILD_RUNNER_TAGS: "android"
   # Max concurrent build-chunk jobs. Leave empty (or unset) for unlimited;
   # set to e.g. "5" to cap concurrency via resource_group slots.
   BUILD_CONCURRENCY: "6"
@@ -34,7 +34,7 @@ default:
 prepare:
   stage: prepare
   tags:
-    - gitgud
+    - android
   image: python:3.12-slim
   timeout: 10 minutes
   before_script:
@@ -81,7 +81,7 @@ build:
 publish:
   stage: publish
   tags:
-    - gitgud
+    - android
   image: eclipse-temurin:17-jdk
   timeout: 15 minutes
   needs:
