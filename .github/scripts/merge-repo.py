@@ -22,8 +22,12 @@ for module in to_delete:
 shutil.copytree(src=LOCAL_REPO.joinpath("apk"), dst=REMOTE_REPO.joinpath("apk"), dirs_exist_ok = True)
 shutil.copytree(src=LOCAL_REPO.joinpath("icon"), dst=REMOTE_REPO.joinpath("icon"), dirs_exist_ok = True)
 
-with REMOTE_REPO.joinpath("index.json").open() as remote_index_file:
-    remote_index = json.load(remote_index_file)
+index_json_path = REMOTE_REPO.joinpath("index.json")
+if index_json_path.exists():
+    with index_json_path.open() as remote_index_file:
+        remote_index = json.load(remote_index_file)
+else:
+    remote_index = []
 
 with LOCAL_REPO.joinpath("index.min.json").open() as local_index_file:
     local_index = json.load(local_index_file)
