@@ -12,6 +12,11 @@ variables:
   # Max concurrent build-chunk jobs. Leave empty (or unset) for unlimited;
   # set to e.g. "5" to cap concurrency via resource_group slots.
   BUILD_CONCURRENCY: "6"
+  # Max heap for each build-chunk JVM (Gradle + Kotlin compiler share it
+  # when in-process strategy is used). Approx total RAM per chunk ≈ this
+  # value + ~1g of non-heap overhead. With BUILD_CONCURRENCY=5 and
+  # BUILD_MAX_MEMORY=4g, peak RAM across all chunks is ~25g.
+  BUILD_MAX_MEMORY: "3g"
   # Full history is needed for `git diff` against the previous commit.
   GIT_DEPTH: "0"
   GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
